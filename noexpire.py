@@ -5,10 +5,10 @@ Usage:
   noexpire.py (--vcenter=<vcenter> --vcenter_pass=<vcenter_pass> --username=<username> --username_pass=<username_pass>)
  
 Options:
-  --vcenter=<vcenter>
-  --vcenter_pass=<vcenter_pass>
-  --username=<username>
-  --username_pass=<username_pass>
+  --vcenter=<vcenter>               The vcenter IP
+  --vcenter_pass=<vcenter_pass>     The vCenter password for the local root user
+  --username=<username>             The username for which you want to set the password policy to no expire
+  --username_pass=<username_pass>   The username's password for which you want to set the password policy to no expire
 """
 import paramiko
 
