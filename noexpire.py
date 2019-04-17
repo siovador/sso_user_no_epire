@@ -18,8 +18,7 @@ from getpass import getpass
 from pyVim.connect import SmartConnect
 
 
-def login_ssh(target, vc_local_user, vc_password, user_pass):
-    cmd = "/usr/lib/vmware-vmafd/bin/dir-cli user modify --account administrator --password-never-expires --password {}".format(user_pass)
+def ssh_execute(target, vc_local_user, vc_password, user_pass, cmd):
     client = paramiko.SSHClient()
     client.load_system_host_keys()
     client.set_missing_host_key_policy(paramiko.WarningPolicy)
@@ -29,8 +28,9 @@ def login_ssh(target, vc_local_user, vc_password, user_pass):
         password=vc_password, 
         )
     stdin, stdout, stderr = client.exec_command('shell {}'.format(cmd))
-    print(stderr.readlines())
-    print(stdout.readlines())    
+    for l in stdout.readlines():
+        print(l.strip())
+    client.close()
 
 def main():
     opts = docopt(__doc__)
@@ -39,11 +39,23 @@ def main():
     user = opts['--username']
     user_pass=opts['--username_pass']
 
-    ssh_session = login_ssh(
+    cmd1 = "/usr/lib/vmware-vmafd/bin/dir-cli user modify --account administrator --password-never-expires --password {}".format(user_pass)
+    cmd2 = "/usr/lib/vmware-vmafd/bin/dir-cli user find-by-name --account administrator --level 2 --password {}".format(user_pass)
+
+    ssh_execute(
         target=vc,
         vc_local_user='root',
         vc_password=vc_pass,
-        user_pass=user_pass
+        user_pass=user_pass,
+        cmd=cmd1
+    )
+
+    ssh_execute(
+        target=vc,
+        vc_local_user='root',
+        vc_password=vc_pass,
+        user_pass=user_pass,
+        cmd=cmd2
     )
 
 if __name__ == '__main__':
